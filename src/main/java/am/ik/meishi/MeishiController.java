@@ -10,8 +10,10 @@ import org.springframework.core.io.Resource;
 import org.springframework.core.io.ResourceLoader;
 import org.springframework.core.io.WritableResource;
 import org.springframework.core.io.support.ResourcePatternResolver;
+import org.springframework.data.domain.Page;
+import org.springframework.data.domain.Pageable;
 import org.springframework.data.domain.Sort;
-import org.springframework.data.web.SortDefault;
+import org.springframework.data.web.PageableDefault;
 import org.springframework.http.CacheControl;
 import org.springframework.http.ResponseEntity;
 import org.springframework.stereotype.Controller;
@@ -25,7 +27,6 @@ import org.springframework.web.bind.annotation.RequestParam;
 
 import java.io.IOException;
 import java.io.OutputStream;
-import java.util.List;
 import java.util.Map;
 import java.util.UUID;
 import java.util.concurrent.TimeUnit;
@@ -48,30 +49,25 @@ public class MeishiController {
 
     @RequestMapping(method = RequestMethod.GET)
     String index(Model model,
-                 @SortDefault.SortDefaults({
-                         @SortDefault(sort = "last_name", direction = Sort.Direction.ASC),
-                         @SortDefault(sort = "first_name", direction = Sort.Direction.ASC)})
-                         Sort sort) {
-        Map<String, String> sortMap = StreamSupport.stream(sort.spliterator(), false)
+                 @PageableDefault(sort = {"last_name", "first_name"}) Pageable pageable) {
+        Map<String, String> sortMap = StreamSupport.stream(pageable.getSort().spliterator(), false)
                 .collect(Collectors.toMap(Sort.Order::getProperty,
                         o -> o.getDirection().name().toLowerCase()));
-        List<Meishi> meishiList = meishiDao.findByLoginUser(meishiUser.getEmail(), sort);
-        model.addAttribute("meishiList", meishiList);
+        Page<Meishi> page = meishiDao.findByLoginUser(meishiUser.getEmail(), pageable);
+        model.addAttribute("page", page);
         model.addAttribute("sortMap", sortMap);
         return "index";
     }
 
     @RequestMapping(method = RequestMethod.GET, params = "companyId")
-    String byCompany(Model model, @RequestParam Integer companyId,
-                     @SortDefault.SortDefaults({
-                             @SortDefault(sort = "last_name", direction = Sort.Direction.ASC),
-                             @SortDefault(sort = "first_name", direction = Sort.Direction.ASC)})
-                             Sort sort) {
-        Map<String, String> sortMap = StreamSupport.stream(sort.spliterator(), false)
+    String byCompany(Model model,
+                     @RequestParam Integer companyId,
+                     @PageableDefault(sort = {"last_name", "first_name"}) Pageable pageable) {
+        Map<String, String> sortMap = StreamSupport.stream(pageable.getSort().spliterator(), false)
                 .collect(Collectors.toMap(Sort.Order::getProperty,
                         o -> o.getDirection().name().toLowerCase()));
-        List<Meishi> meishiList = meishiDao.findByCompanyIdAndLoginUser(companyId, meishiUser.getEmail(), sort);
-        model.addAttribute("meishiList", meishiList);
+        Page<Meishi> page = meishiDao.findByCompanyIdAndLoginUser(companyId, meishiUser.getEmail(), pageable);
+        model.addAttribute("page", page);
         model.addAttribute("sortMap", sortMap);
         model.addAttribute("companyId", companyId);
         return "index";

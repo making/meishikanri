@@ -93,7 +93,7 @@
             <th>編集</th>
         </tr>
         </thead>
-        <tr th:each="meishi : ${meishiList}">
+        <tr th:each="meishi : ${page.content}">
             <td>
                 <ruby>
                     <rb th:text="${meishi.lastNameKanji + ' ' + meishi.firstNameKanji}">Yamada Taro</rb>
@@ -116,6 +116,9 @@
             </td>
         </tr>
     </table>
+    <div class="tabs is-toggle">
+        <ul th:utext="${@paginationRenderer.render(page)}"></ul>
+    </div>
 </div>
 </body>
 </html>
