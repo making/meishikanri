@@ -1,0 +1,121 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout"
+      layout:decorator="layout">
+<head>
+    <meta charset="UTF-8"/>
+    <title></title>
+</head>
+<body>
+<div layout:fragment="content">
+
+    <form th:action="@{/meishi}" method="post" enctype="multipart/form-data">
+        <div class="columns">
+            <div class="column">
+                <p class="control">
+                    <input id="lastNameKanji" name="lastNameKanji" class="input" type="text" placeholder="姓"/>
+                </p>
+            </div>
+
+            <div class="column">
+                <p class="control">
+                    <input id="firstNameKanji" name="firstNameKanji" class="input" type="text" placeholder="名"/>
+                </p>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <p class="control">
+                    <input id="lastName" name="lastName" class="input" type="text" required="required"
+                           placeholder="Last Name (必須)"/>
+                </p>
+            </div>
+
+            <div class="column">
+                <p class="control">
+                    <input id="firstName" name="firstName" class="input" type="text" required="required"
+                           placeholder="First Name (必須)"/>
+                </p>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <p class="control">
+                    <input id="companyName" name="companyName" class="input" type="text" required="required"
+                           placeholder="会社名 (必須)"/>
+                </p>
+            </div>
+
+            <div class="column">
+                <p class="control">
+                    <input id="email" name="email" class="input" type="email" required="required"
+                           placeholder="E-mail (必須)"/>
+                </p>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <p class="control">
+                    <label for="meishiFront">名刺表面 (必須)</label>
+                    <input id="meishiFront" name="meishiFront" type="file" required="required"/>
+                </p>
+            </div>
+            <div class="column">
+                <p class="control">
+                    <label for="meishiBack">名刺裏面</label>
+                    <input id="meishiBack" name="meishiBack" type="file"/>
+                </p>
+            </div>
+        </div>
+        <div class="columns">
+            <div class="column">
+                <p class="control">
+                    <input type="submit" class="button is-primary"/>
+                </p>
+            </div>
+        </div>
+    </form>
+
+    <table class="table is-bordered is-striped is-narrow">
+        <thead>
+        <tr>
+            <th>
+                <a th:with="dir=${sortMap[last_name] == 'desc'? 'asc' : 'desc'}"
+                   th:href="@{'/meishi?sort=last_name,' + ${dir} + '&amp;sort=first_name,' + ${dir} + ${companyId != null ? '&amp;companyId=' + companyId : ''}}"
+                >名前
+                    <i class="fa" th:classappend="${'fa-sort-' + dir}"></i></a></th>
+            <th>E-mail</th>
+            <th>
+                <a th:with="dir=${sortMap[company_name] == 'desc'? 'asc' : 'desc'}"
+                   th:href="@{'/meishi?sort=company_name,' + ${dir}}">会社名
+                    <i class="fa" th:classappend="${'fa-sort-' + dir}"></i></a></th>
+            <th>名刺</th>
+            <th>編集</th>
+        </tr>
+        </thead>
+        <tr th:each="meishi : ${meishiList}">
+            <td>
+                <ruby>
+                    <rb th:text="${meishi.lastNameKanji + ' ' + meishi.firstNameKanji}">Yamada Taro</rb>
+                    <rp>（</rp>
+                    <rt th:text="${meishi.lastName + ' ' + meishi.firstName}">山田 太郎</rt>
+                    <rp>）</rp>
+                </ruby>
+            </td>
+            <td th:text="${meishi.email}"></td>
+            <td><a th:text="${meishi.companyName}" th:href="@{/meishi/(companyId=${meishi.companyId})}"></a></td>
+            <td>
+                <a th:if="${meishi.meishiFront != null}"
+                   th:href="@{'/meishi/' + ${meishi.meishiId}+'/' + ${meishi.meishiFront}}">表面</a>
+                <a th:if="${meishi.meishiBack != null}"
+                   th:href="@{'/meishi/' + ${meishi.meishiId}+'/' + ${meishi.meishiBack}}">裏面</a>
+            </td>
+            <td>
+                <a class="button is-primary">編集</a>
+                <a class="button is-danger" th:href="@{'/meishi/' + ${meishi.meishiId} + '?delete'}">削除</a>
+            </td>
+        </tr>
+    </table>
+</div>
+</body>
+</html>

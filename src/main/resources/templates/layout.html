@@ -1,0 +1,38 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org"
+      xmlns:layout="http://www.ultraq.net.nz/web/thymeleaf/layout" xmlns="http://www.w3.org/1999/html">
+<head>
+    <meta charset="utf-8"/>
+    <meta http-equiv="X-UA-Compatible" content="IE=edge"/>
+    <meta name="viewport" content="width=device-width, initial-scale=1"/>
+    <meta name="description" content=""/>
+    <meta name="author" content=""/>
+    <link rel="stylesheet" href="https://cdn.rawgit.com/jgthms/bulma/master/css/bulma.min.css"/>
+    <link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/font-awesome/4.5.0/css/font-awesome.min.css"/>
+</head>
+<body>
+<header class="header">
+    <div class="container">
+        <div class="header-left">
+            <a class="header-item title" href="/">
+                名刺管理
+            </a>
+        </div>
+        <div id="header-menu" class="header-right header-menu">
+          <span class="header-item">
+            <a href="/" th:text="${@meishiUser.getDisplayName()}">Hi</a>
+          </span>
+          <span class="header-item">
+              <form th:action="@{/logout}" method="post">
+                  <button type="submit" class="button">Logout</button>
+              </form>
+          </span>
+        </div>
+    </div>
+</header>
+<br/>
+<div class="container">
+    <div layout:fragment="content"/>
+</div>
+</body>
+</html>
